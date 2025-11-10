@@ -27,17 +27,17 @@ public class GUI {
 	private JButton[] optionButtons;
 	private JLabel timerLabel;
 	private JLabel titleLable;
-	private GameState gamestate; //nao tenho a certeza disto
-	private Player currentPlayer;
+	//private GameState gamestate; //nao tenho a certeza disto
+	//private Player currentPlayer;
 	
 
 
 	
-	public GUI(GameState gamestate, Player currentPlayer){ //ns!!
+	public GUI(/*GameState gamestate, Player currentPlayer*/){ //ns!!
 		
 		
-		this.gamestate = gamestate;
-	    this.currentPlayer = currentPlayer;
+		//this.gamestate = gamestate;
+	    //this.currentPlayer = currentPlayer;
 		frame=new JFrame("Kahoot");
 		
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -103,7 +103,7 @@ public class GUI {
     			@Override
     			public void actionPerformed(ActionEvent e) {
     				//acao do botao: responder (gamestate submit ??) nao tenho a certeza!!
-    				gamestate.submit(currentPlayer,index);
+    				//gamestate.submit(currentPlayer,index);
     				
     			}
     		});
@@ -118,11 +118,11 @@ public class GUI {
 	
 	
 	
-	public void addStatsFrame() {
+	public void addStatsFrame(Map<String, Integer> scoreboard) {
 	    // Limpa o conteúdo anterior
 	    frame.getContentPane().removeAll();
 	    //vai buscar o scoreboard ao gamestate
-	    Map<String, Integer> scoreboard=gamestate.getScoreboard();
+	    //Map<String, Integer> scoreboard=gamestate.getScoreboard();
 	    JPanel statsPanel = new JPanel();
 	    statsPanel.setLayout(new GridLayout(scoreboard.size() + 1, 2, 10, 10));
 

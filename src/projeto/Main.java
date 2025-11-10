@@ -33,7 +33,7 @@ public class Main {
         GameState gs = new GameState("ABC123", teams, questions);
 
         
-        GUI window = new GUI(gs, p1);
+        GUI window = new GUI();
         window.open();
 
         
@@ -47,7 +47,7 @@ public class Main {
         }
 
         
-        window.addStatsFrame();
+        window.addStatsFrame(gs.getScoreboard());
         
         try {
             Thread.sleep(10000);
