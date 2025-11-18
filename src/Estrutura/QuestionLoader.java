@@ -1,4 +1,4 @@
-package projeto;
+package Estrutura;
 import com.google.gson.*;
 import java.io.*;
 import java.util.*;

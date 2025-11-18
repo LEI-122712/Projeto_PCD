@@ -1,4 +1,5 @@
-package projeto;
+package Cliente;
+import Estrutura.*;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -144,7 +145,7 @@ public class GUI {
 	
 	
 	
-	
+	//METER AS STATS NA JANELA DA PERGUNTA
 	public void addStatsFrame(Map<String, Integer> scoreboard) {
 	    // Limpa o conteúdo anterior
 	    frame.getContentPane().removeAll();

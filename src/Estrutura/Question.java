@@ -1,4 +1,4 @@
-package projeto;
+package Estrutura;
 
 public class Question {
 	

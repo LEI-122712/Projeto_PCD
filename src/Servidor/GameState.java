@@ -1,5 +1,9 @@
-package projeto;
+package Servidor;
 import java.util.*;
+
+import Estrutura.Player;
+import Estrutura.Question;
+import Estrutura.Team;
 
 public class GameState {
 	
