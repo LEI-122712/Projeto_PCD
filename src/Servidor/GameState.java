@@ -10,6 +10,10 @@ public class GameState {
 	private final String roomCode;
     private final List<Question> questions;
     private int currentQuestion = 0;
+    
+    private final int numTeams;
+    private final int numTeamPlayers;
+    //private final int numQuestions; //a considerar
 
     
 
@@ -17,16 +21,20 @@ public class GameState {
     private final Map<String, Team> teams = new HashMap<>();
     private Map<Player, Integer> playersAnswers = new HashMap<>();
     private Map<String, Integer> scoreboard = new HashMap<>();
+    //cronometro?
+    //a considerar
+    private int connectedPlayers = 0;
+    private final int totalPlayersExpected;
+
     
-	public GameState(String roomCode, List<Team> teams, List<Question> questions) {
+	public GameState(String roomCode, int numTeams, int numTeamPlayers, List<Question> questions) {
 		
 		this.roomCode = roomCode;
+		this.numTeams=numTeams;
+		this.numTeamPlayers=numTeamPlayers;
 		this.questions = questions;
-		
-		for (Team t : teams) {
-            this.teams.put(t.getTeamName(), t);
-            scoreboard.put(t.getTeamName(), 0);
-        }
+		// a considerar
+		this.totalPlayersExpected = numTeams * numTeamPlayers;
 		
 	}
 	

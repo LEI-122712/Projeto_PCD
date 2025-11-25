@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 //aqui a ideia é apresentar as perguntas numa frame - passam 30s - mudar para a stats frame - mudar para a prox pergunta (sempre construir frame nova)
-
+//ideia questionavel: nao perguntei a stora pq ainda tou a tratar da parte do servidor
 public class GUI {
 	
 	private JFrame frame;
@@ -29,20 +29,11 @@ public class GUI {
 	private JButton[] optionButtons;
 	private JLabel timerLabel;
 	private JLabel titleLable;
-	//private GameState gamestate; //nao tenho a certeza disto
-	//private Player currentPlayer;
-	
-	//PROVISORIO
-	private int current = 0;
-	private List<Question> questions;
 
-
+	//updates: limpei a gui pq tava a logica de teste antiga que nao é suposto usar
 	
-	public GUI(/*GameState gamestate, Player currentPlayer*/){ //ns!!
+	public GUI(){
 		
-		
-		//this.gamestate = gamestate;
-	    //this.currentPlayer = currentPlayer;
 		frame=new JFrame("Kahoot");
 		
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -50,13 +41,7 @@ public class GUI {
 
 	}
 	
-	public void setCurrent(int q){
-		current=q;
-	}
 	
-	public void setQuestions(List<Question> questions){
-		this.questions=questions;
-	}
 	
 	public void addQuestionFrame(Question q){ //recebe pergunta
 		// Limpa o conteúdo anterior
@@ -115,23 +100,7 @@ public class GUI {
             	//tenho de limitar um player a uma opcao btw nao ta ainda  funcionar isso
     			@Override
     			public void actionPerformed(ActionEvent e) {
-    				//acao do botao: responder (gamestate submit ??) nao tenho a certeza!!
-    				//gamestate.submit(currentPlayer,index);
-    				//PROVISORIO
-    				Map<String, Team> ts = new HashMap<>();
-    				Map<String, Integer> scoreboard = new HashMap<>();
-    				Player p1 = new Player(1,"Joao");
-    		        Player p2 = new Player(2,"Artur");
-    		        Player p3 = new Player(3,"Joana");
-    		        Player p4 = new Player(4,"Mafalda");
-    		        Team team1 = new Team(1, "Team 1", List.of(p1, p2), 0);
-    		        Team team2 = new Team(2, "Team 2", List.of(p3, p4), 0);
-    		        List<Team> teams = List.of(team1, team2);
-    		        for (Team t : teams) {
-    		            ts.put(t.getTeamName(), t);
-    		            scoreboard.put(t.getTeamName(), 0);
-    		        }
-    				addStatsFrame(scoreboard);
+    				//acao do botao: enviar resposta para o servidor ig
     				
     			}
     		});
@@ -175,15 +144,6 @@ public class GUI {
         	
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//PROVISORIO
-				if(current<questions.size()-1){
-					current+=1;
-					addQuestionFrame(questions.get(current));
-				}else{
-					endOfGame();
-					
-				}
-				
 				
 			}
 		});
