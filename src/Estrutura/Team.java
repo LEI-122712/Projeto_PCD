@@ -4,15 +4,13 @@ import java.util.ArrayList;
 
 public class Team {
 	
-	private final int id;
+	
 	private final String teamName;
-	private final List<Player> players;
+	private final List<Player> players=new ArrayList<>();
 	private int totalScore=0; //comeca a zero
 	
-	public Team(int id, String teamName, List<Player> players, int totalScore) {
-		this.id = id;
+	public Team( String teamName) {
 		this.teamName = teamName;
-		this.players = players;
 	}
 
 	
@@ -22,10 +20,10 @@ public class Team {
 	}
 
 
-
-	public int getId() {
-		return id;
+	public void addPlayer(Player player){
+		this.players.add(player);
 	}
+	
 
 
 
@@ -37,6 +35,10 @@ public class Team {
 
 	public List<Player> getPlayers() {
 		return players;
+	}
+	
+	public int getNumPlayers(){
+		return players.size();
 	}
 
 

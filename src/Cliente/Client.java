@@ -19,6 +19,19 @@ public class Client {
 	private Scanner in;
 	private PrintWriter out;
 	
+	private String roomCode;
+    private String teamName;
+    private String username;
+	
+	
+
+	public Client(String roomCode, String teamName, String username) {
+		this.roomCode = roomCode;
+		this.teamName = teamName;
+		this.username = username;
+	}
+
+	
 	
 	public void runClient(){
 		try{
@@ -46,8 +59,35 @@ public class Client {
 	}
 	
 	void processConnection() throws IOException {
-		//TODO
-		out.println("FIM");
+		
+		out.println(roomCode + " " + teamName + " " + username);
+		if (!in.hasNextLine()) {
+            System.out.println("Sem resposta do servidor.");
+            return;
+        }
+		String response = in.nextLine();
+		if(response.startsWith("ACCEPT")) {
+	        System.out.println("Ligacao ao jogo estabelecida com sucesso.");
+	    } else {
+	        System.out.println(response);
+	        return;
+	    }
+		
+		 // aguarda sinal de START do servidor
+        System.out.println("Aguardando o START do servidor...");
+        while (in.hasNextLine()) {
+            String line = in.nextLine();
+            if (line.equals("START")) {
+                System.out.println("Jogo iniciado!");
+                break;
+            } else {
+            	//outra msg
+                System.out.println("Servidor: " + line);
+            }
+        }
+		
+		//GUI??
+		//out.println("FIM");
 	}
 	
 	public void closeConnection(){
@@ -66,7 +106,17 @@ public class Client {
 	}
 	
 	public static void main(String[] args) {
-		new Client().runClient();
+		
+		if(args.length != 3) {
+	        System.out.println("Insira os dados no formato <Jogo> <Equipa> <Username>");
+	        return;
+	    }
+
+	    String roomCode = args[0];
+	    String teamName = args[1];
+	    String username = args[2];
+
+	    new Client(roomCode, teamName, username).runClient();
 	}
 
 }

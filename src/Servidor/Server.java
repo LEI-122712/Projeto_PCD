@@ -12,12 +12,12 @@ import java.util.concurrent.BrokenBarrierException;
 
 import Estrutura.Question;
 import Estrutura.QuestionLoader;
-
+import Estrutura.*;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.List;
-
+//ver da sincronizacao?
 
 public class Server {
 	public static final int PORT=2025;
@@ -31,10 +31,7 @@ public class Server {
 	public void runServer(){
 		try{
 			server = new ServerSocket(PORT);
-			new Thread(new Runnable(){
-				
-				
-				
+			new Thread(new Runnable(){		
 				@Override
 				public void run() {
 					Scanner sc = new Scanner(System.in);
@@ -78,6 +75,10 @@ public class Server {
 		private Scanner in; //stream reader
 		private PrintWriter out; //stream writer
 		
+		private GameState myGame;
+        private Team myTeam;
+        private Player myPlayer;
+		
 		public DealWithClient(Socket connection){
 			this.connection=connection;
 		}
@@ -90,6 +91,7 @@ public class Server {
 			}catch(IOException e){
 				e.printStackTrace();
 			}finally{
+				//considerar se pomos aqui um if para so terminar qd o jogo acabar ou o gajo nao for aceite
 				closeConnection();
 			}
 			
@@ -101,10 +103,84 @@ public class Server {
 			in = new Scanner(connection.getInputStream());
 		}
 		
-		private void processConnection(){
-			while(true){
-				//TODO
+		private void processConnection(){	   
+	        if (!in.hasNextLine()) {
+	            closeConnection();
+	            return;
+	        }
+	        String msg = in.nextLine();
+	        String[] s = msg.split(" ");
+	
+	        if (s.length == 3) {
+	            processFirstConnection(s[0], s[1], s[2]);
+	            
+	            //meter gui aqui?? nao sei
+	            
+	            
+	        } else {
+	            out.println("ERROR: Mensagem inicial inválida");
+	            closeConnection();
+	        }
+		}
+		//confirmar se nao podem existir usernames repetidos mesmo que em jogos dif
+		private void processFirstConnection(String roomCode, String teamName, String username){
+			synchronized(games) {  
+		        if(usernameExists(username)){
+		            out.println("ERROR: O username esta em utilizacao");
+		            closeConnection();
+		            return;
+		        }
+		    }
+			
+			if(!games.containsKey(roomCode)){
+				out.println("ERROR: O jogo nao existe");
+				closeConnection();
+				return;
 			}
+			GameState game = games.get(roomCode);
+			synchronized(game) { //para o mesmo game nao podem executar este bloco 2 players ao mm tempo
+				Map<String, Team> teams = game.getTeams();
+				Team team = teams.get(teamName);
+				if(team==null){
+					if(game.reachedTeamLimit()){
+						out.println("ERROR: O jogo ja esgotou o numero de equipas previsto");
+						closeConnection();
+						return;
+					}
+					team=new Team(teamName);
+					teams.put(teamName, team);
+				}else{
+					if(game.isTeamFull(team)){
+						out.println("ERROR: A equipa esta cheia");
+						closeConnection();
+						return;
+					}
+				}
+				Player newPlayer= new Player(username);
+				team.addPlayer(new Player(username));
+				myGame = game;
+	            myTeam = team;
+	            myPlayer = newPlayer;
+	            game.addConnectedPlayers();
+	            
+	            out.println("ACCEPT");	
+	            
+	            if (game.areAllPlayersConnected()) {
+	                System.out.println("Todos os jogadores ligados. A iniciar jogo: " + roomCode);
+	                //fui pesquisar supostamente e preciso enviar broadcasta todos mas ns ent nao pus
+	                out.println("START");
+	                //TODO ??
+	            }
+			}
+		}
+		//verifica em todos os jogos se o username esta a ser utilizado, considerar??
+		private boolean usernameExists(String username) {
+		    for (GameState g : games.values()) {
+		        for (String u : g.getAllUsernames()) {
+		            if (u.equals(username)) return true;
+		        }
+		    }
+		    return false;
 		}
 		
 		public void closeConnection(){
@@ -129,7 +205,7 @@ public class Server {
 	public String createCode(){
 		Random random= new Random();
 		String code="";
-		while(true){ //gera codigos ate obter um original que nao exista ja
+		while(true){ //gera codigos ate obter um que nao exista ja
 			int codeSize=(int)(Math.random()*(9-3+1)+3); //numero entre 3 e 9
 			for(int i=0; i<codeSize; i++){
 				int n=(int)(Math.random()*10);
@@ -165,6 +241,8 @@ public class Server {
 		
 		
 	}
+	
+	
 	
 	public static void main(String[] args){
 		

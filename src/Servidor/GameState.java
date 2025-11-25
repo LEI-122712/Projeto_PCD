@@ -68,12 +68,37 @@ public class GameState {
         }
     }
 	
-	//nao tenho a certeza!!
-	public void submit(Player player, int option) {
-	    playersAnswers.put(player, option);
-	    //para testar
-	    System.out.println("Jogador " + player.getId() + " respondeu com opção: " + option);
+	
+	public boolean isTeamFull(Team team){
+		return team.getNumPlayers()==numTeamPlayers;
 	}
+	
+	
+	public boolean reachedTeamLimit(){
+		return teams.size()==numTeams;
+	}
+	
+	
+	
+	public void addConnectedPlayers() {
+	    connectedPlayers++;
+	}
+
+	public boolean areAllPlayersConnected() {
+	    return connectedPlayers == totalPlayersExpected;
+	}
+	
+	public List<String> getAllUsernames() {
+	    List<String> list = new ArrayList<>();
+
+	    for (Team t : teams.values()) {
+	        for (Player p : t.getPlayers()) {
+	            list.add(p.getName());
+	        }
+	    }
+	    return list;
+	}
+
 	
 	
 	
