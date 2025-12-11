@@ -1,19 +1,25 @@
 package Estrutura;
 
-public class Question {
+import java.io.Serializable;
+
+public class Question implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private final String question;
 	private final String[] options;
 	private final int correct;
 	private final int points;
-	private final boolean individualQuestion = false; // depois para ver se a pergunta e individual ou nao
+	private final boolean individualQuestion;	// tirei o false, vou implementar algo q assigna isto
+												// tendo em conta a paridade do index da pergunta no quizzes.json
+												// - artur
 
-	public Question(String quest, String[] options, int correct, int points /* , boolean individualQuestion */) {
+	public Question(String quest, String[] options, int correct, int points, boolean individualQuestion) {
 		this.question = quest;
 		this.options = options;
 		this.correct = correct;
 		this.points = points;
-		/* this.individualQuestion=individualQuestion; */
+		this.individualQuestion = individualQuestion;
 	}
 
 	public boolean isIndividualQuestion() {

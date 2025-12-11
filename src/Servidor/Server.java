@@ -12,15 +12,15 @@ import java.net.ServerSocket;
 import java.util.Scanner;
 import java.util.Map;
 import java.util.Random;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 //ver da sincronizacao?
 
 public class Server {
 	public static final int PORT = 2025;
 
 	private ServerSocket server; // server
-	private Map<String, GameState> games = new HashMap<>();
+	private Map<String, GameState> games = new ConcurrentHashMap<>();
 
 	public void runServer() {
 		try {
@@ -176,6 +176,7 @@ public class Server {
 			if (game.areAllPlayersConnected()) {
 				System.out.println("Todos ligados. A iniciar jogo " + roomCode + "...");
     			game.broadcast(new Message(Message.Type.START_GAME, "O jogo vai começar", "Server"));
+				new Thread(() -> game.runGame()).start();
 			}
 			
 		}

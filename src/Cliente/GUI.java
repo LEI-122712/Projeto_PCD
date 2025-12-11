@@ -15,8 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.util.Map;
 
-//aqui a ideia � apresentar as perguntas numa frame - passam 30s - mudar para a stats frame - mudar para a prox pergunta (sempre construir frame nova)
-//ideia questionavel: nao perguntei a stora pq ainda tou a tratar da parte do servidor
 public class GUI {
 
 	private JFrame frame;
@@ -24,34 +22,25 @@ public class GUI {
 	private JButton[] optionButtons;
 	private JLabel timerLabel;
 	private JLabel titleLable;
+	private Client client;
 
-	// updates: limpei a gui pq tava a logica de teste antiga que nao � suposto usar
-
-	public GUI() {
-
+	public GUI(Client client) {
+		this.client = client;
 		frame = new JFrame("Kahoot");
-
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
 	}
 
-	public void addQuestionFrame(Question q) { // recebe pergunta
-		// Limpa o conte�do anterior
+	public void addQuestionFrame(Question q) {
 		frame.getContentPane().removeAll();
-
 		frame.setLayout(new BorderLayout(10, 10));
-
 		JPanel top = new JPanel();
 		titleLable = new JLabel("IsKahoot", JLabel.CENTER);
 		top.add(titleLable);
-
 		frame.add(top, BorderLayout.NORTH);
-
 		String qtext = q.getQuestion();
 		JPanel center = new JPanel(new BorderLayout(10, 10));
-		questionLabel = new JLabel(qtext, JLabel.CENTER); // vai ter a pergunta
+		questionLabel = new JLabel(qtext, JLabel.CENTER);
 		center.add(questionLabel, BorderLayout.NORTH);
-
 		String[] options = q.getOptions();
 		int gridsize = 0;
 		if (options.length % 2 == 0) {
@@ -71,26 +60,27 @@ public class GUI {
 			optionButtons[i].setForeground(Color.WHITE);
 		}
 		center.add(answers, BorderLayout.CENTER);
-
 		frame.add(center, BorderLayout.CENTER);
-
 		JPanel bottom = new JPanel();
-		timerLabel = new JLabel("Tempo", JLabel.CENTER); // vai ter o tempo
+		timerLabel = new JLabel("Tempo", JLabel.CENTER);
 		bottom.add(timerLabel);
-
 		frame.add(bottom, BorderLayout.SOUTH);
-
 		for (int i = 0; i < options.length; i++) {
-			int index = i;
-			optionButtons[i].addActionListener(new ActionListener() {
-				// tenho de limitar um player a uma opcao btw nao ta ainda funcionar isso
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// acao do botao: enviar resposta para o servidor ig
-
-				}
-			});
-		}
+            int index = i; // Necessário para usar dentro da classe anónima
+            optionButtons[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 3. ADICIONAR ESTA LÓGICA
+                    // Desativar botões para impedir múltiplas respostas
+                    for (JButton btn : optionButtons) btn.setEnabled(false);
+                    
+                    // Enviar a resposta ao servidor através do cliente
+                    if (client != null) {
+                        client.sendAnswer(index);
+                    }
+                }
+            });
+        }
 		frame.pack();
 		frame.revalidate();
 		frame.repaint();

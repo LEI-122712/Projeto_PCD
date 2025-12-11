@@ -5,16 +5,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Map;
 
 import Servidor.Server;
 import Estrutura.Message;
+import Estrutura.Question;
 
 public class Client {
 
 	private Socket connection;
 	private ObjectInputStream in;   // MUDOU
     private ObjectOutputStream out; // MUDOU
-
+	private GUI gui;
 	private String roomCode;
 	private String teamName;
 	private String username;
@@ -27,6 +29,7 @@ public class Client {
 
 	public void runClient() {
 		try {
+			this.gui = new GUI(this);
 			connectToServer();
 			setStreams();
 			processConnection();
@@ -65,7 +68,7 @@ public class Client {
                 
                 if (response.getType() == Message.Type.LOGIN_SUCCESS) {
                     System.out.println("Ligação ao jogo estabelecida!");
-                    waitForStart(); // Cria este método ou mete a lógica aqui
+                    waitForStart();
                 } else {
                     System.out.println("Erro: " + response.getContent());
                     return;
@@ -79,22 +82,56 @@ public class Client {
 		// out.println("FIM");
 	}
 
-	void waitForStart() throws IOException, ClassNotFoundException {
-        System.out.println("A aguardar início do jogo...");
-        while (true) {
-        Object obj = in.readObject(); // Fica bloqueado aqui à espera de msg
-        if (obj instanceof Message) {
-            Message msg = (Message) obj;
-            if (msg.getType() == Message.Type.START_GAME) {
-                System.out.println("O JOGO COMEÇOU!");
-                // Aqui eventualmente será chamada a função para iniciar o ciclo de perguntas
-                break; 
-            }
-            // Podemos adicionar else if para tratar de outras mensagens se for preciso
+	public void sendAnswer(int index) {
+        try {
+            // Envia o índice da resposta como Integer dentro da mensagem
+            out.writeObject(new Message(Message.Type.ANSWER, index, username));
+            out.flush(); // Importante para seguir imediatamente
+        } catch (IOException e) {
+            System.out.println("Erro ao enviar resposta: " + e.getMessage());
         }
     }
-    }
 
+	void waitForStart() throws IOException, ClassNotFoundException {
+        System.out.println("A aguardar início do jogo...");
+        
+        // 2. ABRIR A JANELA DE ESPERA
+        gui.open(); 
+
+        while (true) {
+            Object obj = in.readObject();
+            if (obj instanceof Message) {
+                Message msg = (Message) obj;
+                
+                switch (msg.getType()) {
+                    case START_GAME:
+                        System.out.println("O JOGO COMEÇOU!");
+                        break;
+                        
+                    case QUESTION:
+                        Question q = (Question) msg.getContent();
+                        System.out.println("Recebi pergunta: " + q.getQuestion());
+                        // 3. ATUALIZAR A GUI COM A PERGUNTA
+                        gui.addQuestionFrame(q); 
+                        break;
+                        
+                    case SCORE_UPDATE:
+                        Map<String, Integer> scores = (Map<String, Integer>) msg.getContent();
+                        // 4. ATUALIZAR A GUI COM O PLACAR
+                        gui.addStatsFrame(scores);
+                        break;
+                        
+                    case END_GAME:
+                        System.out.println("Fim do jogo!");
+                        gui.endOfGame();
+                        return; // Sai e fecha
+                        
+                    default:
+                        System.out.println("Msg desconhecida: " + msg.getType());
+                }
+            }
+        }
+    }
 	public void closeConnection() {
 		try {
 			if (connection != null)

@@ -7,13 +7,14 @@ import Estrutura.Message;
 import Estrutura.Player;
 import Estrutura.Question;
 import Estrutura.Team;
+import Servidor.ModifiedCountDownLatch;
 
 public class GameState {
 
 	private final String roomCode;
 	private final List<Question> questions;
 	private int currentQuestion = 0;
-
+	private ModifiedCountDownLatch currentLatch;
 	private final int numTeams;
 	private final int numTeamPlayers;
 	// private final int numQuestions; //a considerar
@@ -165,6 +166,91 @@ public class GameState {
 		
 		return LoginResult.OK;
 		
+    }
+
+	public void runGame() {
+        try {
+            System.out.println("Início do Ciclo de Jogo [" + roomCode + "]");
+            
+            // Pausa inicial para garantir que clientes carregaram a GUI
+            Thread.sleep(2000);
+
+            for (Question q : questions) {
+                currentQuestion = questions.indexOf(q);
+                
+                // 1. Enviar Pergunta a todos
+                System.out.println("A enviar pergunta: " + q.getQuestion());
+                broadcast(new Message(Message.Type.QUESTION, q, "Server"));
+
+                // 2. Preparar Sincronização
+                if (q.isIndividualQuestion()) {
+                    System.out.println("Ronda Individual. A criar Latch...");
+                    // Exemplo: Bónus x2 para os primeiros 2, 30 segundos, total de jogadores conectados
+                    // Podes ajustar o '2' (bonusCount) conforme o número de jogadores
+                    int bonusCount = Math.max(1, connectedPlayers / 2); 
+                    currentLatch = new ModifiedCountDownLatch(2, bonusCount, 30, connectedPlayers);
+                    
+                    // 3. Bloquear a thread do jogo à espera das respostas ou do tempo
+                    currentLatch.await(); 
+                    
+                } else {
+                    // TODO: Implementar lógica da Barreira (Fase seguinte - Perguntas de Equipa)
+                    System.out.println("Pergunta de equipa (Barreira). Saltando espera temporariamente...");
+                    Thread.sleep(5000); 
+                }
+
+                // 4. Fim da Ronda: Enviar pontuações atualizadas
+                // Vamos enviar o scoreboard (Map<String, Integer>)
+                broadcast(new Message(Message.Type.SCORE_UPDATE, new HashMap<>(scoreboard), "Server"));
+                
+                // Pausa para os jogadores verem o resultado
+                Thread.sleep(3000);
+            }
+
+            // Fim do Jogo
+            broadcast(new Message(Message.Type.END_GAME, "O jogo terminou!", "Server"));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Processa a resposta de um jogador.
+     * Chamado pela thread 'DealWithClient' quando recebe uma msg ANSWER.
+     */
+    public synchronized void submitAnswer(String username, int answerIndex) {
+        // Encontra o jogador
+        Player player = getPlayer(username);
+        if (player == null) return;
+
+        Question curQ = getCurrentQuestion();
+        
+        // Verifica se acertou
+        if (answerIndex == curQ.getCorrect()) {
+            int points = curQ.getPoints();
+            
+            // Se for individual, usa o Latch para ver se tem bónus
+            if (curQ.isIndividualQuestion() && currentLatch != null) {
+                int bonus = currentLatch.countDown(); // Decrementa e devolve o fator
+                points *= bonus;
+                if (bonus > 1) System.out.println("JOGADOR " + username + " GANHOU BÓNUS!");
+            }
+            
+            // Atualiza pontuação do Jogador
+            player.setScore(player.getScore() + points);
+            
+            // Atualiza scoreboard global (simplificado por agora: nome -> pontos)
+            // Idealmente aqui somavas também à equipa
+            scoreboard.put(username, player.getScore()); 
+        } else {
+            // Se errou, também precisamos de avisar o Latch que este jogador já respondeu?
+            // Sim, para o jogo não ficar à espera dele até ao fim do tempo.
+            // O countDown devolve 1 (sem bónus) mas decrementa o contador de respostas pendentes.
+            if (curQ.isIndividualQuestion() && currentLatch != null) {
+                currentLatch.countDown(); 
+            }
+        }
     }
 
 }
