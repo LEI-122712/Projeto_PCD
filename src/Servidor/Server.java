@@ -14,13 +14,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-//ver da sincronizacao?
 
 public class Server {
 	public static final int PORT = 2025;
 
 	private ServerSocket server; // server
-	private Map<String, GameState> games = new ConcurrentHashMap<>();
+	private Map<String, GameState> games = new ConcurrentHashMap<>(); //TODO acho q e preciso implementar isto
 
 	public void runServer() {
 		try {
@@ -62,11 +61,10 @@ public class Server {
 		System.out.println("Started new connection...");
 	}
 
-	// connection handler ï¿½ so para o servidor?
 	private class DealWithClient extends Thread {
 		private Socket connection;
-		private ObjectInputStream in; // MUDOU de Scanner para ObjectInputStream
-		private ObjectOutputStream out; // MUDOU de PrintWriter para ObjectOutputStream
+		private ObjectInputStream in; 
+		private ObjectOutputStream out; 
 
 		private GameState myGame;
 		private Team myTeam;
@@ -81,7 +79,7 @@ public class Server {
 			try {
 				setStreams();
 				processConnection();
-			} catch (Exception e) { // Catch genÃ©rico para apanhar ClassNotFoundException tambÃ©m
+			} catch (Exception e) { 
 				e.printStackTrace();
 			} finally {
 				closeConnection();
@@ -89,14 +87,12 @@ public class Server {
 		}
 
 		private void setStreams() throws IOException {
-			// ORDEM CRÃ�TICA: Primeiro o Output, Flush, depois o Input
 			out = new ObjectOutputStream(connection.getOutputStream());
-			out.flush(); // Garante que o cabeÃ§alho Ã© enviado para o cliente nÃ£o bloquear
+			out.flush(); 
 			in = new ObjectInputStream(connection.getInputStream());
 		}
 
 		private void processConnection() throws IOException, ClassNotFoundException {
-			// --- PASSO 1: TRATAR O LOGIN (PRIMEIRA MENSAGEM) ---
 			Object obj = in.readObject();
 			if (obj instanceof Message) {
 				Message msg = (Message) obj;
@@ -108,19 +104,17 @@ public class Server {
 					} else {
 						out.writeObject(new Message(Message.Type.LOGIN_ERROR, "Formato invÃ¡lido.", "Server"));
 						closeConnection();
-						return; // Sai se o formato for invÃ¡lido
+						return; 
 					}
 				}
 			}
 
-			// Se a conexÃ£o foi fechada por erro no login (ex: user repetido), saÃ­mos.
 			if (connection.isClosed()) return;
 
-			// --- PASSO 2: LOOP PRINCIPAL (AGUARDAR MENSAGENS DO JOGO) ---
-			// A thread fica aqui presa e viva enquanto o cliente estiver ligado
+			
 			while (true) {
 				try {
-					Object nextObj = in.readObject(); // Bloqueia Ã  espera de mensagens (ex: Respostas)
+					Object nextObj = in.readObject(); 
 					if (nextObj instanceof Message) {
 						Message msg = (Message) nextObj;
 						System.out.println("Mensagem recebida de " + msg.getSender() + ": " + msg.getType());
@@ -131,23 +125,19 @@ public class Server {
                         }
 					}
 				} catch (IOException e) {
-					// O cliente desligou-se (ou o jogo acabou)
 					System.out.println("Cliente desconectou-se.");
-					break; // Sai do loop e vai para o finally fechar tudo limpo
+					break; 
 				}
 			}
 		}
 
-		// confirmar se nao podem existir usernames repetidos mesmo que em jogos dif
 		private void processFirstConnection(String roomCode, String teamName, String username) throws IOException {
-			//isto precisa de ser sinchronized?
 			if (!games.containsKey(roomCode)) {
 				out.writeObject(new Message(Message.Type.LOGIN_ERROR, "O jogo não existe.", "Server"));
 				closeConnection();
 				return;
 			}
 			GameState game = games.get(roomCode);
-			//substituir aqui pela funcao
 			LoginResult r = game.addTeamAndPlayer(out, teamName, username);
 			switch (r) {
 		        case USERNAME_EXISTS:

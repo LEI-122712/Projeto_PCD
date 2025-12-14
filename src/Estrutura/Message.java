@@ -4,25 +4,23 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-    // Para evitar warnings de serialização
     private static final long serialVersionUID = 1L;
 
-    // Tipos de mensagens possíveis
     public enum Type {
-        LOGIN,          // Pedido de login
-        LOGIN_SUCCESS,  // Login aceite
-        LOGIN_ERROR,    // Erro no login (nome repetido, etc)
-        START_GAME,     // Jogo começou
-        QUESTION,       // Envio de pergunta
-        ANSWER,         // Envio de resposta
+        LOGIN,          
+        LOGIN_SUCCESS,  
+        LOGIN_ERROR,    
+        START_GAME,     
+        QUESTION,       
+        ANSWER,         
         ANSWER_RESULT,
-        SCORE_UPDATE,   // Atualização de pontuação
-        END_GAME        // Fim do jogo
+        SCORE_UPDATE,   
+        END_GAME       
     }
 
     private Type type;
-    private Object content; // Pode ser uma String, uma Question, um Map de scores...
-    private String sender;  // Quem enviou (opcional, útil para debug)
+    private Object content;
+    private String sender;  
 
     public Message(Type type, Object content, String sender) {
         this.type = type;

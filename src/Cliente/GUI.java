@@ -79,7 +79,6 @@ public class GUI {
 				
 				if (timeRemaining <= 0) {
 					timer.stop();
-					// Bloquear botões quando o tempo acaba
 					if (optionButtons != null) {
 						for (JButton btn : optionButtons) btn.setEnabled(false);
 					}
@@ -94,7 +93,6 @@ public class GUI {
             optionButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Desativar botões para impedir múltiplas respostas
                     for (JButton btn : optionButtons) btn.setEnabled(false);
                     if (client != null) {
                         client.sendAnswer(index);
@@ -108,12 +106,8 @@ public class GUI {
 
 	}
 
-	// METER AS STATS NA JANELA DA PERGUNTA
 	public void addStatsFrame(Map<String, Integer> scoreboard) {
-		// Limpa o conte�do anterior
 		frame.getContentPane().removeAll();
-		// vai buscar o scoreboard ao gamestate
-		// Map<String, Integer> scoreboard=gamestate.getScoreboard();
 		JPanel statsPanel = new JPanel();
 		statsPanel.setLayout(new GridLayout(scoreboard.size() + 1, 2, 10, 10));
 
@@ -134,12 +128,10 @@ public class GUI {
 	}
 
 	public void open() {
-		// para abrir a janela (torna-la visivel)
 		frame.setVisible(true);
 	}
 
 	public void showFeedback(boolean correct, int points) {
-        // Exemplo simples: Mudar a cor de fundo ou título
         if (correct) {
             titleLable.setText("CORRETO! (+" + points + " pts)");
             titleLable.setForeground(Color.GREEN);
@@ -147,7 +139,6 @@ public class GUI {
             titleLable.setText("ERRADO!");
             titleLable.setForeground(Color.RED);
         }
-        // Podes pintar o botão correto de verde aqui se quiseres
     }
 
 	public void endOfGame() {

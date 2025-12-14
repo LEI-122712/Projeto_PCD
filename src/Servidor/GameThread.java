@@ -24,9 +24,7 @@ public class GameThread extends Thread{
             for (Question q : questions) {
                 game.setCurrentQuestion(questions.indexOf(q));
                 
-                // --- ADICIONAR: Limpar respostas antigas ---
                 game.cleanAnswers();
-                // ------------------------------------------
 
                 game.broadcast(new Message(Message.Type.QUESTION, q, "Server"));
 
@@ -46,12 +44,9 @@ public class GameThread extends Thread{
              
                     game.setLatch(null);
                     
-                    // Servidor espera na barreira (35s timeout)
                     game.getBarrier().await(35); 
                     
-                    // --- ADICIONAR: Calcular pontos da equipa aqui ---
                     game.calculateTeamScores(q);
-                    // ------------------------------------------------
                 }
 
                 game.broadcast(new Message(Message.Type.SCORE_UPDATE, new HashMap<>(game.getScoreboard()), "Server"));

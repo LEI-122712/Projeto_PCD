@@ -36,7 +36,6 @@ public class GameState {
 		this.numTeams = numTeams;
 		this.numTeamPlayers = numTeamPlayers;
 		this.questions = questions;
-		// a considerar
 		this.totalPlayersExpected = numTeams * numTeamPlayers;
 
 	}
@@ -69,11 +68,7 @@ public class GameState {
 		this.currentQuestion=index;
 	}
 
-	public void nextQuestion() {
-		if (currentQuestion < questions.size() - 1) {
-			currentQuestion++;
-		}
-	}
+
 	
 	public void cleanAnswers(){
 		this.currentRoundAnswers.clear();
@@ -138,17 +133,17 @@ public class GameState {
 		return list;
 	}
 
-	// Método para registar um novo canal de output
+	
     public synchronized void addPlayerStream(ObjectOutputStream out) {
         outputStreams.add(out);
     }
 
-    // Método para enviar mensagem a TODOS os jogadores deste jogo
+    
     public synchronized void broadcast(Message msg) {
         for (ObjectOutputStream out : outputStreams) {
             try {
                 out.writeObject(msg);
-                out.reset(); // Importante para evitar cache de objetos repetidos
+                out.reset(); 
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -215,12 +210,11 @@ public class GameState {
     }
 
 	
-	// --- ADICIONAR ESTE MÉTODO NOVO ---
+	
     public synchronized void calculateTeamScores(Question q) {
         for (Team team : teams.values()) {
             int correctCount = 0;
             
-            // Verificar quantos acertaram na equipa usando o mapa currentRoundAnswers
             for (Player p : team.getPlayers()) {
                 if (currentRoundAnswers.containsKey(p.getName())) {
                     int ans = currentRoundAnswers.get(p.getName());
@@ -231,7 +225,6 @@ public class GameState {
             }
             
             int teamPoints = 0;
-            // Regra: Todos acertam = Dobro. Pelo menos um acerta = Normal.
             if (correctCount == team.getNumPlayers() && team.getNumPlayers() > 0) {
                 teamPoints = q.getPoints() * 2;
                 System.out.println("Equipa " + team.getTeamName() + ": TODOS acertaram! (Bónus)");
@@ -240,7 +233,6 @@ public class GameState {
                 System.out.println("Equipa " + team.getTeamName() + ": Pelo menos um acertou.");
             }
             
-            // Atribuir pontos a todos os membros da equipa
             if (teamPoints > 0) {
                 for (Player p : team.getPlayers()) {
                     p.setScore(p.getScore() + teamPoints);
@@ -256,14 +248,12 @@ public class GameState {
 
         Question curQ = getCurrentQuestion();
         
-        // --- ADICIONAR: Guardar a resposta ---
         currentRoundAnswers.put(username, answerIndex);
         // -------------------------------------
 
         int pointsAwarded = 0; 
 
         if (curQ.isIndividualQuestion()) {
-            // Lógica Individual (igual ao que tinhas)
             if (answerIndex == curQ.getCorrect()) {
                 int points = curQ.getPoints();
                 if (currentLatch != null) {

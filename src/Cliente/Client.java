@@ -14,8 +14,8 @@ import Estrutura.Question;
 public class Client {
 
 	private Socket connection;
-	private ObjectInputStream in;   // MUDOU
-    private ObjectOutputStream out; // MUDOU
+	private ObjectInputStream in;  
+    private ObjectOutputStream out; 
 	private GUI gui;
 	private String roomCode;
 	private String teamName;
@@ -41,7 +41,6 @@ public class Client {
 	}
 
 	private void setStreams() throws IOException {
-        // Tal como no servidor: Output primeiro!
         out = new ObjectOutputStream(connection.getOutputStream());
         out.flush();
         in = new ObjectInputStream(connection.getInputStream());
@@ -57,11 +56,9 @@ public class Client {
 
 	void processConnection() throws IOException {
         try {
-            // 1. Enviar pedido de Login
             String loginData = roomCode + " " + teamName + " " + username;
             out.writeObject(new Message(Message.Type.LOGIN, loginData, username));
             
-            // 2. Aguardar resposta
             Object responseObj = in.readObject();
             if (responseObj instanceof Message) {
                 Message response = (Message) responseObj;
@@ -78,15 +75,14 @@ public class Client {
             e.printStackTrace();
         }
 
-		// GUI??
-		// out.println("FIM");
+		
 	}
 
 	public void sendAnswer(int index) {
         try {
-            // Envia o índice da resposta como Integer dentro da mensagem
+            
             out.writeObject(new Message(Message.Type.ANSWER, index, username));
-            out.flush(); // Importante para seguir imediatamente
+            out.flush(); 
         } catch (IOException e) {
             System.out.println("Erro ao enviar resposta: " + e.getMessage());
         }
@@ -95,13 +91,12 @@ public class Client {
 	void waitForStart() throws IOException, ClassNotFoundException {
         System.out.println("A aguardar início do jogo...");
 
-        // 2. ABRIR A JANELA DE ESPERA
-        // Também deve ser feito na EDT
+        //reconsiderar
         javax.swing.SwingUtilities.invokeLater(() -> gui.open());
 
         while (true) {
             try {
-                Object obj = in.readObject(); // Bloqueia à espera de mensagens do servidor
+                Object obj = in.readObject(); 
                 if (obj instanceof Message) {
                     Message msg = (Message) obj;
 
@@ -113,7 +108,6 @@ public class Client {
                         case QUESTION:
                             Question q = (Question) msg.getContent();
                             System.out.println("Recebi pergunta: " + q.getQuestion());
-                            // 3. ATUALIZAR A GUI COM A PERGUNTA (na EDT)
                             javax.swing.SwingUtilities.invokeLater(() -> {
                                 gui.addQuestionFrame(q);
                             });
@@ -123,12 +117,7 @@ public class Client {
                             int points = (Integer) msg.getContent();
                             if (points == -1) {
                                 System.out.println("Resposta registada. A aguardar pela equipa...");
-                                // Podes mostrar uma mensagem neutra na GUI ou apenas não mostrar erro
                                 javax.swing.SwingUtilities.invokeLater(() -> {
-                                    // Exemplo: Alterar o título para feedback visual sem dizer "Errado"
-                                    // Se não tiveres método para setTitle, podes ignorar ou criar um
-                                    // gui.showFeedback(true, 0) mas com texto personalizado se conseguires.
-                                    // Para já, isto evita o "ERRASTE!"
                                 });
                             } 
                             else if (points > 0) {
@@ -137,7 +126,6 @@ public class Client {
                                     gui.showFeedback(true, points);
                                 });
                             } else {
-                                // Só é erro se for 0 e não -1
                                 System.out.println("ERRASTE!");
                                 javax.swing.SwingUtilities.invokeLater(() -> {
                                     gui.showFeedback(false, 0);
@@ -148,7 +136,6 @@ public class Client {
                         case SCORE_UPDATE:
                             @SuppressWarnings("unchecked")
                             Map<String, Integer> scores = (Map<String, Integer>) msg.getContent();
-                            // 4. ATUALIZAR A GUI COM O PLACAR (na EDT)
                             javax.swing.SwingUtilities.invokeLater(() -> {
                                 gui.addStatsFrame(scores);
                             });
@@ -156,11 +143,10 @@ public class Client {
 
                         case END_GAME:
                             System.out.println("Fim do jogo!");
-                            // Fechar a GUI na EDT
                             javax.swing.SwingUtilities.invokeLater(() -> {
                                 gui.endOfGame();
                             });
-                            return; // Sai do loop e fecha a conexão
+                            return;
 
                         default:
                             System.out.println("Msg desconhecida: " + msg.getType());
@@ -168,7 +154,7 @@ public class Client {
                 }
             } catch (java.io.StreamCorruptedException e) {
                 System.err.println("Erro crítico de sincronização de stream. A tentar recuperar...");
-                break; // Sai do jogo se a stream estiver irrecuperável
+                break; 
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Ligação perdida ou erro de leitura.");
                 break;

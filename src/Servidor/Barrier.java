@@ -9,7 +9,7 @@ public class Barrier {
 
     private final int participants;
     private int count;
-    private int generation = 0; // Para detetar se a barreira jÃ¡ rodou (reutilizaÃ§Ã£o)
+    private int generation = 0; 
     private final Lock lock = new ReentrantLock();
     private final Condition barrierOpen = lock.newCondition();
 
@@ -21,24 +21,17 @@ public class Barrier {
     public void await(long timeoutSeconds) throws InterruptedException {
         lock.lock();
         try {
-            int myGeneration = generation; // Guarda a geraÃ§Ã£o atual localmente
+            int myGeneration = generation; 
             count++;
 
             if (count == participants) {
-                // Ãšltimo a chegar: abre a barreira
                 count = 0;
-                generation++; // Muda a geraÃ§Ã£o para a prÃ³xima ronda
+                generation++; 
                 barrierOpen.signalAll();
             } else {
-                // Espera
                 long nanos = TimeUnit.SECONDS.toNanos(timeoutSeconds);
-                
-                // CORREÃ‡ÃƒO CRÃ�TICA: 'while' em vez de 'if'
-                // Verifica a geraÃ§Ã£o para saber se a barreira "rodou" enquanto dormÃ­amos
                 while (count < participants && generation == myGeneration) {
                     if (nanos <= 0L) {
-                        // Timeout: Opcional - quebrar a barreira ou apenas sair
-                        // Aqui forÃ§amos a saÃ­da desta thread, mas idealmente tratarias o erro
                         break; 
                     }
                     nanos = barrierOpen.awaitNanos(nanos);
@@ -52,9 +45,9 @@ public class Barrier {
     public void reset() {
         lock.lock();
         try {
-            generation++;     // Muda o "número de série" da ronda
-            count = 0;        // Zera o contador de participantes
-            barrierOpen.signalAll(); // Acorda qualquer thread perdida da ronda anterior
+            generation++;    
+            count = 0;        
+            barrierOpen.signalAll(); 
         } finally {
             lock.unlock();
         }
