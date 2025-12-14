@@ -17,6 +17,8 @@ public class Server {
 
 	private ServerSocket server;
 	private Map<String, GameState> games = new ConcurrentHashMap<>(); 
+	private GameThreadPool gamePool = new GameThreadPool(5);
+
 
 	public void runServer() {
 		try {
@@ -164,8 +166,9 @@ public class Server {
 			if (game.areAllPlayersConnected()) {
 				System.out.println("Todos ligados. A iniciar jogo " + roomCode + "...");
     			game.broadcast(new Message(Message.Type.START_GAME, "O jogo vai comecar", "Server"));
-				GameThread gameThread = new GameThread(game);
-				gameThread.start();
+    			GameThread gameThread = new GameThread(game);
+    			gamePool.submit(gameThread);
+
 			}
 			
 		}

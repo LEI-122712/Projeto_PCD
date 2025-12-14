@@ -110,7 +110,7 @@ public class GameState {
 		return connectedPlayers == totalPlayersExpected;
 	}
 	
-	public synchronized Player getPlayer(String username) {
+	public Player getPlayer(String username) { //-s
 	    for (Team t : teams.values()) {
 	        for (Player p : t.getPlayers()) {
 	            if (p.getName().equals(username)) {
@@ -203,7 +203,7 @@ public class GameState {
         return null;
     }
 
-    public synchronized void sendToPlayer(ObjectOutputStream targetOut, Message msg) {
+    public void sendToPlayer(ObjectOutputStream targetOut, Message msg) { //-s
         try {
             targetOut.writeObject(msg);
             targetOut.reset();
