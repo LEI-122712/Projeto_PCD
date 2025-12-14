@@ -112,7 +112,7 @@ public class GUI {
 		statsPanel.setLayout(new GridLayout(scoreboard.size() + 1, 2, 10, 10));
 
 		statsPanel.add(new JLabel("Equipa", JLabel.CENTER));
-		statsPanel.add(new JLabel("Pontua��o", JLabel.CENTER));
+		statsPanel.add(new JLabel("Pontuacao", JLabel.CENTER));
 
 		for (String teamName : scoreboard.keySet()) {
 			int score = scoreboard.get(teamName);

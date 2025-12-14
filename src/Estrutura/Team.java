@@ -7,7 +7,7 @@ public class Team {
 
 	private final String teamName;
 	private final List<Player> players = new ArrayList<>();
-	private int totalScore = 0; // comeca a zero
+	private int totalScore = 0;
 
 	public Team(String teamName) {
 		this.teamName = teamName;

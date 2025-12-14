@@ -17,7 +17,7 @@ public class GameThread extends Thread{
 	@Override
 	public void run() {
 		try {
-            System.out.println("Início do Ciclo de Jogo [" + game.getRoomCode() + "]");
+            System.out.println("Inicio do Ciclo de Jogo [" + game.getRoomCode() + "]");
             Thread.sleep(2000);
             List<Question> questions=game.getQuestions();
 

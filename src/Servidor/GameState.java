@@ -231,7 +231,7 @@ public class GameState {
             int teamPoints = 0;
             if (correctCount == team.getNumPlayers() && team.getNumPlayers() > 0) {
                 teamPoints = q.getPoints() * 2;
-                System.out.println("Equipa " + team.getTeamName() + ": TODOS acertaram! (Bónus)");
+                System.out.println("Equipa " + team.getTeamName() + ": TODOS acertaram! (Bonus)");
             } else if (correctCount > 0) {
                 teamPoints = q.getPoints();
                 System.out.println("Equipa " + team.getTeamName() + ": Pelo menos um acertou.");
@@ -253,7 +253,6 @@ public class GameState {
         Question curQ = getCurrentQuestion();
         
         currentRoundAnswers.put(username, answerIndex);
-        // -------------------------------------
 
         int pointsAwarded = 0; 
 

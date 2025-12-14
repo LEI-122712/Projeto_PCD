@@ -64,7 +64,7 @@ public class Client {
                 Message response = (Message) responseObj;
                 
                 if (response.getType() == Message.Type.LOGIN_SUCCESS) {
-                    System.out.println("Ligação ao jogo estabelecida!");
+                    System.out.println("Ligacao ao jogo estabelecida!");
                     waitForStart();
                 } else {
                     System.out.println("Erro: " + response.getContent());
@@ -89,10 +89,9 @@ public class Client {
     }
 
 	void waitForStart() throws IOException, ClassNotFoundException {
-        System.out.println("A aguardar início do jogo...");
+        System.out.println("A aguardar inicio do jogo...");
 
-        //reconsiderar
-        javax.swing.SwingUtilities.invokeLater(() -> gui.open());
+        gui.open();
 
         while (true) {
             try {
@@ -102,50 +101,39 @@ public class Client {
 
                     switch (msg.getType()) {
                         case START_GAME:
-                            System.out.println("O JOGO COMEÇOU!");
+                            System.out.println("O JOGO COMECOU!");
                             break;
 
                         case QUESTION:
                             Question q = (Question) msg.getContent();
                             System.out.println("Recebi pergunta: " + q.getQuestion());
-                            javax.swing.SwingUtilities.invokeLater(() -> {
-                                gui.addQuestionFrame(q);
-                            });
+                            gui.addQuestionFrame(q);
                             break;
 
                         case ANSWER_RESULT:
                             int points = (Integer) msg.getContent();
                             if (points == -1) {
                                 System.out.println("Resposta registada. A aguardar pela equipa...");
-                                javax.swing.SwingUtilities.invokeLater(() -> {
-                                });
+                                
                             } 
                             else if (points > 0) {
                                 System.out.println("ACERTASTE! Ganhaste " + points + " pontos.");
-                                javax.swing.SwingUtilities.invokeLater(() -> {
-                                    gui.showFeedback(true, points);
-                                });
+                                gui.showFeedback(true, points);
+                                
                             } else {
                                 System.out.println("ERRASTE!");
-                                javax.swing.SwingUtilities.invokeLater(() -> {
-                                    gui.showFeedback(false, 0);
-                                });
+                                gui.showFeedback(false, 0);
                             }
                             break;
 
                         case SCORE_UPDATE:
-                            @SuppressWarnings("unchecked")
                             Map<String, Integer> scores = (Map<String, Integer>) msg.getContent();
-                            javax.swing.SwingUtilities.invokeLater(() -> {
-                                gui.addStatsFrame(scores);
-                            });
+                            gui.addStatsFrame(scores);
                             break;
 
                         case END_GAME:
                             System.out.println("Fim do jogo!");
-                            javax.swing.SwingUtilities.invokeLater(() -> {
-                                gui.endOfGame();
-                            });
+                            gui.endOfGame();
                             return;
 
                         default:
@@ -153,10 +141,10 @@ public class Client {
                     }
                 }
             } catch (java.io.StreamCorruptedException e) {
-                System.err.println("Erro crítico de sincronização de stream. A tentar recuperar...");
+                System.err.println("Erro critico de sincronizacao de stream. A tentar recuperar...");
                 break; 
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Ligação perdida ou erro de leitura.");
+                System.out.println("Ligacao perdida ou erro de leitura.");
                 break;
             }
         }

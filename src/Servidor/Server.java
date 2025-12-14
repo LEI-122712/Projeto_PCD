@@ -2,11 +2,8 @@ package Servidor;
 
 import Estrutura.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.Scanner;
@@ -18,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
 	public static final int PORT = 2025;
 
-	private ServerSocket server; // server
-	private Map<String, GameState> games = new ConcurrentHashMap<>(); //TODO acho q e preciso implementar isto
+	private ServerSocket server;
+	private Map<String, GameState> games = new ConcurrentHashMap<>(); 
 
 	public void runServer() {
 		try {
@@ -58,7 +55,7 @@ public class Server {
 		Socket connection = server.accept();
 		DealWithClient handler = new DealWithClient(connection);
 		handler.start();
-		System.out.println("Started new connection...");
+		System.out.println("Comecada nova conexao...");
 	}
 
 	private class DealWithClient extends Thread {
@@ -102,7 +99,7 @@ public class Server {
 					if (s.length == 3) {
 						processFirstConnection(s[0], s[1], s[2]);
 					} else {
-						out.writeObject(new Message(Message.Type.LOGIN_ERROR, "Formato invÃ¡lido.", "Server"));
+						out.writeObject(new Message(Message.Type.LOGIN_ERROR, "Formato invalido.", "Server"));
 						closeConnection();
 						return; 
 					}
@@ -134,7 +131,7 @@ public class Server {
 
 		private void processFirstConnection(String roomCode, String teamName, String username) throws IOException {
 			if (!games.containsKey(roomCode)) {
-				out.writeObject(new Message(Message.Type.LOGIN_ERROR, "O jogo não existe.", "Server"));
+				out.writeObject(new Message(Message.Type.LOGIN_ERROR, "O jogo nao existe.", "Server"));
 				closeConnection();
 				return;
 			}
@@ -152,7 +149,7 @@ public class Server {
 		            return;
 	
 		        case TEAM_FULL:
-		            out.writeObject(new Message(Message.Type.LOGIN_ERROR, "A equipa está cheia.", "Server"));
+		            out.writeObject(new Message(Message.Type.LOGIN_ERROR, "A equipa esta cheia.", "Server"));
 		            closeConnection();
 		            return;
 	
@@ -166,7 +163,7 @@ public class Server {
 
 			if (game.areAllPlayersConnected()) {
 				System.out.println("Todos ligados. A iniciar jogo " + roomCode + "...");
-    			game.broadcast(new Message(Message.Type.START_GAME, "O jogo vai começar", "Server"));
+    			game.broadcast(new Message(Message.Type.START_GAME, "O jogo vai comecar", "Server"));
 				GameThread gameThread = new GameThread(game);
 				gameThread.start();
 			}
@@ -225,10 +222,10 @@ public class Server {
 			GameState g = new GameState(code, numTeams, numTeamPlayers, questions);
 			games.put(code, g);
 
-			System.out.println("Nova sala criada com o cÃ³digo: " + code
-				+ "\nNÃºmero de equipas: " + numTeams
-				+ "\nNÃºmero de jogadores por equipa: " + numTeamPlayers
-				+ "\nNÃºmero de perguntas: " + numQuestions
+			System.out.println("Nova sala criada com o codigo: " + code
+				+ "\numero de equipas: " + numTeams
+				+ "\numero de jogadores por equipa: " + numTeamPlayers
+				+ "\numero de perguntas: " + numQuestions
 			);
 		}
 
