@@ -137,6 +137,10 @@ public class GameState {
     public synchronized void addPlayerStream(ObjectOutputStream out) {
         outputStreams.add(out);
     }
+    
+    public synchronized void removePlayerStream(ObjectOutputStream out){
+    	outputStreams.remove(out);
+    }
 
     
     public synchronized void broadcast(Message msg) {

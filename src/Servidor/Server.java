@@ -126,6 +126,7 @@ public class Server {
 					}
 				} catch (IOException e) {
 					System.out.println("Cliente desconectou-se.");
+					myGame.removePlayerStream(out);
 					break; 
 				}
 			}
