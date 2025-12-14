@@ -8,8 +8,7 @@ import Estrutura.Question;
 
 public class GameThread extends Thread{
 	private GameState game;
-	private ModifiedCountDownLatch currentLatch;
-	private Barrier currentBarrier;
+	
 	
 	public GameThread(GameState game){
 		this.game=game;
@@ -33,16 +32,16 @@ public class GameThread extends Thread{
 
                 if (q.isIndividualQuestion()) {
                     System.out.println(">>> Ronda Individual");
-                    currentLatch = new ModifiedCountDownLatch(2, 2, 30, game.getConnectedPlayers());
-                    currentLatch.await(); 
-                    currentBarrier = null;
+                    game.setLatch(new ModifiedCountDownLatch(2, 2, 30, game.getConnectedPlayers()));
+                    game.getLatch().await();
+                    game.setBarrier(null);
                 } else {
                     System.out.println(">>> Ronda de Equipa");
-                    currentBarrier = new Barrier(game.getConnectedPlayers() + 1);
-                    currentLatch = null; 
+                    game.setBarrier(new Barrier(game.getConnectedPlayers() + 1));
+                    game.setLatch(null);
                     
                     // Servidor espera na barreira (35s timeout)
-                    currentBarrier.await(35); 
+                    game.getBarrier().await(35); 
                     
                     // --- ADICIONAR: Calcular pontos da equipa aqui ---
                     game.calculateTeamScores(q);

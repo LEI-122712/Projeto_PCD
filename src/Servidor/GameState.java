@@ -25,6 +25,9 @@ public class GameState {
 	private Map<String, Integer> currentRoundAnswers = new ConcurrentHashMap<>();
 	private int connectedPlayers = 0;
 	private final int totalPlayersExpected;
+	
+	private ModifiedCountDownLatch currentLatch;
+	private Barrier currentBarrier;
 
 
 	public GameState(String roomCode, int numTeams, int numTeamPlayers, List<Question> questions) {
@@ -90,6 +93,22 @@ public class GameState {
 	
 	public int getConnectedPlayers(){
 		return connectedPlayers;
+	}
+	
+	public void setBarrier(Barrier b){
+		this.currentBarrier=b;
+	}
+	
+	public Barrier getBarrier(){
+		return currentBarrier;
+	}
+	
+	public ModifiedCountDownLatch getLatch(){
+		return currentLatch;
+	}
+	
+	public void setLatch(ModifiedCountDownLatch l){
+		this.currentLatch=l;
 	}
 
 	public synchronized boolean areAllPlayersConnected() {
