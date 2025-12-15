@@ -101,9 +101,9 @@ public class Server {
 			games.put(code, g);
 
 			System.out.println("Nova sala criada com o codigo: " + code
-				+ "\numero de equipas: " + numTeams
-				+ "\numero de jogadores por equipa: " + numTeamPlayers
-				+ "\numero de perguntas: " + numQuestions
+				+ "\nNumero de equipas: " + numTeams
+				+ "\nNumero de jogadores por equipa: " + numTeamPlayers
+				+ "\nNumero de perguntas: " + numQuestions
 			);
 		}
 

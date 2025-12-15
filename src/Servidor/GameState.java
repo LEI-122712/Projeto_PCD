@@ -312,7 +312,6 @@ public class GameState {
         if (currentLatch != null) {
         	if (!jaRespondeu) { //para nao atrasar o jogo na ronda em q saiu, faz countdown na mesma se ainda nao tinha respondido
                 currentLatch.countDown();
-                System.out.println("Latch decrementado por saida (sem resposta).");
            }
         }
 
