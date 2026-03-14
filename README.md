@@ -8,7 +8,6 @@ Este projeto foi desenvolvido no âmbito da UC Programação Concorrente e Distr
   - **Individuais:** Com bónus de pontuação para os primeiros a responder.
   - **Equipa:** Exige coordenação, onde a pontuação é calculada com base no sucesso coletivo.
 - **Interface Gráfica (GUI):** Desenvolvida em Swing, com temporizadores e feedback visual de respostas.
-- **Persistência de Dados:** Quizzes carregados dinamicamente a partir de ficheiros JSON utilizando a biblioteca GSON.
 
 ## Mecanismos de Concorrência Aplicados
 O projeto foca-se na resolução de problemas de sincronização e coordenação de threads:
