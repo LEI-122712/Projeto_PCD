@@ -22,7 +22,7 @@ O projeto foca-se na resolução de problemas de sincronização e coordenação
 ### 1. Correr o Servidor
 ### 2. Criar uma Sala no Servidor
 
-No terminal do servidor, crie uma sala utilizando o comando:
+No terminal do servidor, criar uma sala utilizando o comando:
 
 ```bash
 new <num_equipas> <jogadores_por_equipa> <num_perguntas>
