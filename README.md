@@ -33,7 +33,7 @@ new <num_equipas> <jogadores_por_equipa> <num_perguntas>
 Cada jogador deve iniciar um cliente e ligar-se ao servidor utilizando:
 
 ```bash
-java Cliente.Client <IP> <Port> <Cod_Sala> <Nome_Equipa> <Username>
+java Cliente.Client <IP> <Port> <Codigo_Sala> <Nome_Equipa> <Username>
 ```
 Quando todos os jogadores se ligarem ao servidor, o jogo inicia automaticamente.
 
